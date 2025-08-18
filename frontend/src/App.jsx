@@ -1,16 +1,22 @@
-// src/App.jsx (Final)
+// src/App.jsx (Setelah diubah)
+
 import { useState, useEffect } from "react";
 import axios from "axios";
 import "./App.css";
-import ProgrammerList from "./components/ProgrammerList";
 import SearchBar from "./components/SearchBar";
-import AddProgrammerForm from "./components/AddProgrammerForm"; // <-- Import
+import AddProgrammerForm from "./components/AddProgrammerForm";
+import EditProgrammerModal from "./components/EditProgrammerModal";
+import ProgrammerTable from "./components/ProgrammerTable"; // <-- IMPORT BARU
 
 function App() {
   const [programmers, setProgrammers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingProgrammer, setEditingProgrammer] = useState(null);
+
   useEffect(() => {
+    // ... (logika useEffect tetap sama)
     const fetchData = async () => {
       try {
         const response = await axios.get(
@@ -24,18 +30,76 @@ function App() {
     fetchData();
   }, [searchTerm]);
 
-  // Fungsi untuk mengupdate daftar setelah data baru ditambahkan
   const handleProgrammerAdded = (newProgrammer) => {
     setProgrammers([...programmers, newProgrammer]);
+  };
+
+  const handleDelete = async (id) => {
+    // Tampilkan konfirmasi sebelum menghapus
+    if (window.confirm("Apakah Anda yakin ingin menghapus data ini?")) {
+      try {
+        // Panggil API untuk menghapus
+        await axios.delete(`http://localhost:5001/api/programmers/${id}`);
+        // Update UI dengan menghapus data dari state
+        setProgrammers(
+          programmers.filter((programmer) => programmer._id !== id)
+        );
+      } catch (error) {
+        console.error("Gagal menghapus data:", error);
+        alert("Gagal menghapus data.");
+      }
+    }
+  };
+
+  const handleOpenEditModal = (programmer) => {
+    setEditingProgrammer(programmer);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingProgrammer(null);
+  };
+
+  const handleSaveChanges = async (id, updatedData) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:5001/api/programmers/${id}`,
+        updatedData
+      );
+      // Update data di state UI
+      setProgrammers(
+        programmers.map((p) => (p._id === id ? response.data : p))
+      );
+      handleCloseModal(); // Tutup modal setelah berhasil
+    } catch (error) {
+      console.error("Gagal menyimpan perubahan:", error);
+      alert("Gagal menyimpan perubahan.");
+    }
   };
 
   return (
     <div className="container">
       <h1>Daftar Programmer GThings</h1>
-      <AddProgrammerForm onProgrammerAdded={handleProgrammerAdded} />{" "}
-      {/* <-- Gunakan Form */}
+      <AddProgrammerForm onProgrammerAdded={handleProgrammerAdded} />
       <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
-      <ProgrammerList programmers={programmers} />
+
+      {/* Oper fungsi-fungsi baru ke ProgrammerTable */}
+      <ProgrammerTable
+        programmers={programmers}
+        onDelete={handleDelete}
+        onEdit={handleOpenEditModal} // <-- oper fungsi edit
+      />
+
+      {/* Render komponen Modal di sini */}
+      {editingProgrammer && (
+        <EditProgrammerModal
+          open={isModalOpen}
+          onClose={handleCloseModal}
+          programmer={editingProgrammer}
+          onSave={handleSaveChanges}
+        />
+      )}
     </div>
   );
 }
