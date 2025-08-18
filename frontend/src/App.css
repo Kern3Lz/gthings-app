@@ -1,0 +1,39 @@
+/* src/App.css */
+body {
+  font-family: sans-serif;
+  background-color: #f4f7f6;
+  color: #333;
+}
+
+.container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+h1 {
+  color: #007bff;
+  text-align: center;
+}
+
+.programmer-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.programmer-card {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.programmer-card h2 {
+  margin-top: 0;
+  color: #333;
+}
+
+.programmer-card .email {
+  color: #555;
+  font-style: italic;
+}
