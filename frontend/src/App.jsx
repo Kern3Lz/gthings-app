@@ -8,6 +8,8 @@ import AddProgrammerForm from "./components/AddProgrammerForm";
 import EditProgrammerModal from "./components/EditProgrammerModal";
 import ProgrammerTable from "./components/ProgrammerTable"; // <-- IMPORT BARU
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 function App() {
   const [programmers, setProgrammers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -20,7 +22,7 @@ function App() {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5001/api/programmers?search=${searchTerm}`
+          `${API_URL}/api/programmers?search=${searchTerm}`
         );
         setProgrammers(response.data);
       } catch (error) {
@@ -39,7 +41,7 @@ function App() {
     if (window.confirm("Apakah Anda yakin ingin menghapus data ini?")) {
       try {
         // Panggil API untuk menghapus
-        await axios.delete(`http://localhost:5001/api/programmers/${id}`);
+        await axios.delete(`${API_URL}/api/programmers/${id}`);
         // Update UI dengan menghapus data dari state
         setProgrammers(
           programmers.filter((programmer) => programmer._id !== id)
@@ -64,7 +66,7 @@ function App() {
   const handleSaveChanges = async (id, updatedData) => {
     try {
       const response = await axios.put(
-        `http://localhost:5001/api/programmers/${id}`,
+        `${API_URL}/api/programmers/${id}`,
         updatedData
       );
       // Update data di state UI

@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 function AddProgrammerForm({ onProgrammerAdded }) {
   const [nama, setNama] = useState("");
   const [email, setEmail] = useState("");
@@ -15,10 +17,7 @@ function AddProgrammerForm({ onProgrammerAdded }) {
     }
     try {
       const newData = { nama_lengkap: nama, email, jabatan };
-      const response = await axios.post(
-        "http://localhost:5001/api/programmers",
-        newData
-      );
+      const response = await axios.post(`${API_URL}/api/programmers`, newData);
       onProgrammerAdded(response.data); // Kirim data baru ke parent (App.jsx)
       // Reset form
       setNama("");
